@@ -7,7 +7,7 @@ namespace WordGuessGame
 {
     class Program
     {
-         
+
         static void Main(string[] args)
         {
             GuessingGameWelcomeMessage();
@@ -27,11 +27,11 @@ namespace WordGuessGame
             Console.WriteLine("************************************************* \n");
         }
 
-       /// <summary>
-       /// This method shows the game options. 
-       /// </summary>
-       /// <param name="userInput"></param>
-       /// <returns>userInput</returns>
+        /// <summary>
+        /// This method shows the game options. 
+        /// </summary>
+        /// <param name="userInput"></param>
+        /// <returns>userInput</returns>
         public static void GuessingGameMenu()
         {
             Console.WriteLine("**************************************************");
@@ -40,13 +40,13 @@ namespace WordGuessGame
             Console.WriteLine("***    2. View All Words                       ***");
             Console.WriteLine("***    3. Add Words                            ***");
             Console.WriteLine("***    4. Remove Words                         ***");
-            Console.WriteLine("***    5. Exit The Game                        ***");
+            Console.WriteLine("***    5. Quit The Game                        ***");
             Console.WriteLine("***                                            ***");
             Console.WriteLine("***    Choose a number to continue.            ***");
             Console.WriteLine("**************************************************");
             Console.Write("> ");
             string userInput = Console.ReadLine();
-            Options(userInput); 
+            Options(userInput);
         }
         /// <summary>
         /// Actual game logic
@@ -55,10 +55,12 @@ namespace WordGuessGame
         {
             CreateNewFile();
             string word = RandomWord();
-            ShowUnderscoresForSelectedRandomWord(word);
-            Console.WriteLine();
-            Console.WriteLine("Please guess one letter in the word.");
-            Console.Write("> ");
+            string showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
+            Console.WriteLine(String.Join(" ", showUnderscore.ToCharArray()));
+            string response = GuessALetter();
+            bool stillGuesses = GuessIfLetterInWord(word, response, showUnderscore);
+        
+
         }
 
         /// <summary>
@@ -91,6 +93,20 @@ namespace WordGuessGame
                     GuessingGameMenu();
                     break;
             }
+        }
+        /// <summary>
+        /// Prompts the user, and stores data. 
+        /// </summary>
+        /// <returns></returns>
+        public static string GuessALetter()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Please guess one letter in the word.");
+            Console.Write("> ");
+            string input = Console.ReadLine();
+
+            return input;
+           
         }
 
 
@@ -136,7 +152,7 @@ namespace WordGuessGame
             string path = "../../../allWords.txt";
             Console.WriteLine("Here is a list of the current words: ");
             string[] words = File.ReadAllLines(path);
-           
+
 
             foreach (string word in words)
             {
@@ -146,12 +162,12 @@ namespace WordGuessGame
             Console.WriteLine("Which word would you like to delete?");
             Console.Write("> ");
             string input = Console.ReadLine().ToLower();
-            
+
             var newFile = words.Where(word => !word.Contains(input));
             File.WriteAllLines(path, newFile);
             Console.WriteLine("You have successfully deleted: " + input + "\n");
             Console.WriteLine("Words left: ");
-            foreach(string word in newFile)
+            foreach (string word in newFile)
             {
                 Console.WriteLine(word);
             }
@@ -191,16 +207,48 @@ namespace WordGuessGame
 
             return randomWord;
         }
-
-        public static char[] ShowUnderscoresForSelectedRandomWord(string word)
+        /// <summary>
+        /// Will show the amount of underscores in random word that's selected. 
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public static string ShowUnderscoresForSelectedRandomWord(string word)
         {
-            char[] underscoreWord = word.ToCharArray();
+            string underscore = string.Empty;
 
-            foreach(char letter in underscoreWord)
+            foreach (char letter in word)
             {
-                Console.Write("_ ");
+                underscore += "_";
             }
-            return underscoreWord;
+            return underscore;
+        }
+       /// <summary>
+       /// This checks if the letter guessed is in the random word selected. 
+       /// </summary>
+       /// <param name="word"></param>
+       /// <param name="input"></param>
+       /// <param name="underscore"></param>
+       /// <returns>True if letter in word, false if not</returns>
+        public static bool GuessIfLetterInWord(string word, string input, string underscore)
+        {
+            char letter = char.Parse(input);
+            char[] letters = word.ToCharArray();
+            char[] newValue = null; 
+
+            for (int i = 0; i < letters.Length; i++)
+            {
+                if (letter == letters[i])
+                {
+                    newValue = underscore.ToCharArray();
+                    newValue[i] = letter;
+                    return true;
+                }
+                else
+                {
+                   
+                }
+            }
+            return false;
         }
     }
 }
