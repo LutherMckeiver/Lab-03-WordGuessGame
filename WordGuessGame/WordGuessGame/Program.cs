@@ -2,13 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Text.RegularExpressions;
 
 namespace WordGuessGame
 {
     class Program
     {
-
+        /// <summary>
+        /// Main Method that starts the program. 
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             GuessingGameWelcomeMessage();
@@ -58,20 +61,30 @@ namespace WordGuessGame
             string word = RandomWord();
 
             
-            string showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
-            Console.WriteLine(String.Join(" ", showUnderscore.ToCharArray()));
+            char[] showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
+            Console.WriteLine(String.Join(" ", showUnderscore));
 
-            bool notDone = GuessesLeft(showUnderscore);
-
-            while (!notDone) 
+            
+            while (true)
             {
                 string input = GuessALetter();
-                showUnderscore = GuessIfLetterInWord(word, input, showUnderscore);
-                Console.WriteLine(String.Join(" ", showUnderscore.ToCharArray()));
+                showUnderscore = GuessIfLetterInWord(showUnderscore, input, word.ToCharArray());
+                Console.WriteLine(String.Join(" ", showUnderscore));
 
+                if (Regex.IsMatch(showUnderscore.ToString(), @"^[a-zA-Z]+$"))
+                {
+                    Console.WriteLine("Good game, thanks for playing. Want to play another game?");
+                    Console.Write("> ");
+                    string answer = Console.ReadLine();
+                    Options(answer);
+                    
+                }
                 
             }
         }
+
+       
+
 
         /// <summary>
         /// This method handles the logic of which choice someone picks off the menu.
@@ -110,13 +123,19 @@ namespace WordGuessGame
         /// <returns></returns>
         public static string GuessALetter()
         {
-            Console.WriteLine();
-            Console.WriteLine("Please guess one letter in the word.");
-            Console.Write("> ");
-            string input = Console.ReadLine();
 
+
+            string input = String.Empty; 
+            while (input != "quit")
+            {
+                
+                Console.WriteLine();
+                Console.WriteLine("Please guess one letter in the word.");
+                Console.Write("> ");
+                input = Console.ReadLine();
+                return input;
+            }
             return input;
-
         }
 
 
@@ -222,52 +241,66 @@ namespace WordGuessGame
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        public static string ShowUnderscoresForSelectedRandomWord(string word)
+        public static char[] ShowUnderscoresForSelectedRandomWord(string word)
         {
-            string underscore = string.Empty;
+            
+            char[] stringToCharWord = word.ToCharArray();
 
-            foreach (char letter in word)
+            for (int i = 0; i < stringToCharWord.Length; i++)
             {
-                underscore += "_";
-               
+                stringToCharWord[i] = '_';
             }
-            return underscore;
+            return stringToCharWord;
         }
         /// <summary>
-        /// This checks if the letter guessed is in the random word selected. 
+        /// This method handles the logic of comparing if the userInput is equal to the one of the letters in the selected word index.
         /// </summary>
-        /// <param name="word"></param>
+        /// <param name="underscoredWord"></param>
         /// <param name="input"></param>
-        /// <param name="underscore"></param>
-        /// <returns>True if letter in word, false if not</returns>
-        public static string GuessIfLetterInWord(string word, string input, string underscore)
+        /// <param name="selectedWord"></param>
+        /// <returns>Char array of letters</returns>
+        public static char[] GuessIfLetterInWord(char[] underscoredWord, string input, char[] selectedWord)
         {
-            char letter = char.Parse(input);
-            char[] letters = word.ToCharArray();
-            char[] newValue = null;
-
-            for (int i = 0; i < letters.Length; i++)
+            try
             {
-                if (letter == letters[i])
+                char userInput = char.Parse(input);
+                char[] letters = underscoredWord;
+                char[] newValue = new Char[underscoredWord.Length];
+                bool contains = ContainsLetter(input, selectedWord);
+                if (contains)
                 {
-                    newValue = underscore.ToCharArray();
-                    newValue[i] = letter;
-                    string format = String.Join(" ", newValue);
-                    return format;
+                    for (int i = 0; i < selectedWord.Length; i++)
+                    {
+                        if (userInput == selectedWord[i])
+                        {
+                            underscoredWord[i] = userInput;
+                        }
+                    }
                 }
-              
+                else
+                {
+                    Console.WriteLine("Not the right guess, please try again");
+                }
+                return underscoredWord;
             }
-            return input;
+            
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return underscoredWord;
+            }
         }
 
-        public static bool GuessesLeft(string underscore)
+        public static bool ContainsLetter(string guess, char[] word)
         {
+            string stringifyGuess = guess;
+            string stringifyWord = String.Join(" ", word);
 
-            while (underscore.Contains("_"))
+            if (stringifyWord.Contains(stringifyGuess))
             {
-                return false; ; 
+                return true;
             }
-            return true; 
+            return false;
         }
     }
 }
