@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+
 namespace WordGuessGame
 {
     class Program
@@ -49,18 +50,27 @@ namespace WordGuessGame
             Options(userInput);
         }
         /// <summary>
-        /// Actual game logic
+        /// Game logic for starting a new game. 
         /// </summary>
         public static void StartANewGame()
         {
             CreateNewFile();
             string word = RandomWord();
+
+            
             string showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
             Console.WriteLine(String.Join(" ", showUnderscore.ToCharArray()));
-            string response = GuessALetter();
-            bool stillGuesses = GuessIfLetterInWord(word, response, showUnderscore);
-        
 
+            bool notDone = GuessesLeft(showUnderscore);
+
+            while (!notDone) 
+            {
+                string input = GuessALetter();
+                showUnderscore = GuessIfLetterInWord(word, input, showUnderscore);
+                Console.WriteLine(String.Join(" ", showUnderscore.ToCharArray()));
+
+                
+            }
         }
 
         /// <summary>
@@ -106,7 +116,7 @@ namespace WordGuessGame
             string input = Console.ReadLine();
 
             return input;
-           
+
         }
 
 
@@ -219,21 +229,22 @@ namespace WordGuessGame
             foreach (char letter in word)
             {
                 underscore += "_";
+               
             }
             return underscore;
         }
-       /// <summary>
-       /// This checks if the letter guessed is in the random word selected. 
-       /// </summary>
-       /// <param name="word"></param>
-       /// <param name="input"></param>
-       /// <param name="underscore"></param>
-       /// <returns>True if letter in word, false if not</returns>
-        public static bool GuessIfLetterInWord(string word, string input, string underscore)
+        /// <summary>
+        /// This checks if the letter guessed is in the random word selected. 
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="input"></param>
+        /// <param name="underscore"></param>
+        /// <returns>True if letter in word, false if not</returns>
+        public static string GuessIfLetterInWord(string word, string input, string underscore)
         {
             char letter = char.Parse(input);
             char[] letters = word.ToCharArray();
-            char[] newValue = null; 
+            char[] newValue = null;
 
             for (int i = 0; i < letters.Length; i++)
             {
@@ -241,14 +252,22 @@ namespace WordGuessGame
                 {
                     newValue = underscore.ToCharArray();
                     newValue[i] = letter;
-                    return true;
+                    string format = String.Join(" ", newValue);
+                    return format;
                 }
-                else
-                {
-                   
-                }
+              
             }
-            return false;
+            return input;
+        }
+
+        public static bool GuessesLeft(string underscore)
+        {
+
+            while (underscore.Contains("_"))
+            {
+                return false; ; 
+            }
+            return true; 
         }
     }
 }
