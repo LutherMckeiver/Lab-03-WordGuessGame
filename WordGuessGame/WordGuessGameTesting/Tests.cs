@@ -26,5 +26,21 @@ namespace WordGuessGameTesting
         {
             Assert.Equal(expectation, Program.ViewAllWords());
         }
+
+        //[Fact]
+        //public void CheckIfLetterExistsInWord() // come back to testing..
+        //{
+        //    char[] word = { 'h', 'e', 'l', 'l', 'o' };
+        //    string guess = "h";
+        //    bool expected = true;
+
+        //    for(int i = 0; i < word.Length; i++)
+        //    {
+
+        //    }
+
+
+        //    Assert.Equal(guess, Program.ContainsLetter(guess, word));
+        //}
     }
 }
