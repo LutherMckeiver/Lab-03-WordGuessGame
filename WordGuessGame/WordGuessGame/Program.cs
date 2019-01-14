@@ -64,23 +64,20 @@ namespace WordGuessGame
             char[] showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
             Console.WriteLine(String.Join(" ", showUnderscore));
 
+           
             
-            while (true)
+
+
+            while (ContainsUnderscores(showUnderscore))
             {
                 string input = GuessALetter();
                 showUnderscore = GuessIfLetterInWord(showUnderscore, input, word.ToCharArray());
                 Console.WriteLine(String.Join(" ", showUnderscore));
-
-                if (Regex.IsMatch(showUnderscore.ToString(), @"^[a-zA-Z]+$"))
-                {
-                    Console.WriteLine("Good game, thanks for playing. Want to play another game?");
-                    Console.Write("> ");
-                    string answer = Console.ReadLine();
-                    Options(answer);
-                    
-                }
-                
             }
+            Console.WriteLine("Good game, thanks for playing. Want to play another game?");
+            Console.Write("> ");
+            string answer = Console.ReadLine();
+            Options(answer);
         }
 
        
@@ -110,6 +107,12 @@ namespace WordGuessGame
                     Console.WriteLine("See you later");
                     Environment.Exit(0);
                     break;
+                case "yes":
+                    StartANewGame();
+                    break;
+                case "no":
+                    Environment.Exit(0);
+                    break;
                 default:
                     Console.WriteLine("Please enter a valid input.\n\n");
                     Console.Clear();
@@ -120,7 +123,7 @@ namespace WordGuessGame
         /// <summary>
         /// Prompts the user, and stores data. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>user input</returns>
         public static string GuessALetter()
         {
 
@@ -158,7 +161,7 @@ namespace WordGuessGame
         /// <summary>
         /// Adds a new word to the game file. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the appended text</returns>
         public static string AddNewWord()
         {
 
@@ -240,7 +243,7 @@ namespace WordGuessGame
         /// Will show the amount of underscores in random word that's selected. 
         /// </summary>
         /// <param name="word"></param>
-        /// <returns></returns>
+        /// <returns>char array</returns>
         public static char[] ShowUnderscoresForSelectedRandomWord(string word)
         {
             
@@ -274,6 +277,8 @@ namespace WordGuessGame
                         if (userInput == selectedWord[i])
                         {
                             underscoredWord[i] = userInput;
+                            if (underscoredWord == selectedWord)
+                                break;
                         }
                     }
                 }
@@ -286,11 +291,21 @@ namespace WordGuessGame
             
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return underscoredWord;
+                Console.WriteLine(ex.Message);
+                Console.ReadLine();
+                throw;
+            }
+            finally
+            {
+                
             }
         }
-
+        /// <summary>
+        /// This is the method to see whether or not a guess is in a word. 
+        /// </summary>
+        /// <param name="guess"></param>
+        /// <param name="word"></param>
+        /// <returns>bool</returns>
         public static bool ContainsLetter(string guess, char[] word)
         {
             string stringifyGuess = guess;
@@ -299,6 +314,22 @@ namespace WordGuessGame
             if (stringifyWord.Contains(stringifyGuess))
             {
                 return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// This sees if a word still contains underscores
+        /// </summary>
+        /// <param name="noUnderscores"></param>
+        /// <returns>boolean</returns>
+        public static bool ContainsUnderscores(char[] noUnderscores)
+        {
+           for (int i =  0; i < noUnderscores.Length; i++)
+            {
+                if (noUnderscores[i] == '_')
+                {
+                    return true;
+                }
             }
             return false;
         }
