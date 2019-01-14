@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,10 @@ using System.Text.RegularExpressions;
 
 namespace WordGuessGame
 {
-    class Program
+    public class Program
+
     {
+        static HashSet<char> characterGuessed = new HashSet<char>();
         /// <summary>
         /// Main Method that starts the program. 
         /// </summary>
@@ -18,6 +21,8 @@ namespace WordGuessGame
             GuessingGameMenu();
             Console.ReadLine();
         }
+        
+        
         /// <summary>
         /// Welcome Message Method
         /// </summary>
@@ -31,6 +36,7 @@ namespace WordGuessGame
             Console.WriteLine("************************************************* \n");
         }
 
+        
         /// <summary>
         /// This method shows the game options. 
         /// </summary>
@@ -52,6 +58,8 @@ namespace WordGuessGame
             string userInput = Console.ReadLine();
             Options(userInput);
         }
+        
+        
         /// <summary>
         /// Game logic for starting a new game. 
         /// </summary>
@@ -64,8 +72,8 @@ namespace WordGuessGame
             char[] showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
             Console.WriteLine(String.Join(" ", showUnderscore));
 
-           
-            
+            HashSet<char> charactersGuessed = new HashSet<char>();
+
 
 
             while (ContainsUnderscores(showUnderscore))
@@ -81,8 +89,6 @@ namespace WordGuessGame
         }
 
        
-
-
         /// <summary>
         /// This method handles the logic of which choice someone picks off the menu.
         /// </summary>
@@ -98,7 +104,9 @@ namespace WordGuessGame
                     ViewAllWords();
                     break;
                 case "3":
-                    AddNewWord();
+                    Console.Write("Add your word here: ");
+                    string input = Console.ReadLine();
+                    AddNewWord(input);
                     break;
                 case "4":
                     DeleteAWord();
@@ -120,6 +128,8 @@ namespace WordGuessGame
                     break;
             }
         }
+        
+        
         /// <summary>
         /// Prompts the user, and stores data. 
         /// </summary>
@@ -145,36 +155,52 @@ namespace WordGuessGame
         /// <summary>
         /// Creates a file in the path specified. And adds default words.
         /// </summary>
-        /// <param name="path"></param>
-        public static void CreateNewFile()
+        /// <returns>filepath</returns>
+        public static bool CreateNewFile()
         {
             string path = "../../../allWords.txt";
 
             if (!File.Exists(path))
             {
-                using (StreamWriter writer = File.AppendText(path))
+                try
                 {
-                    writer.Write("tiger\ncat\nfrog\ncow\nsheep\nlion\ndragon\nfish\nshark\n");
+                    using (StreamWriter writer = File.AppendText(path))
+                    {
+                        writer.Write("tiger\ncat\nfrog\ncow\nsheep\nlion\ndragon\nfish\nshark\n");
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
             }
+            return File.Exists(path);
         }
+        
+        
         /// <summary>
         /// Adds a new word to the game file. 
         /// </summary>
         /// <returns>the appended text</returns>
-        public static string AddNewWord()
+        public static bool AddNewWord(string input)
         {
 
             string path = "../../../allWords.txt";
-            Console.Write("Add your word here: ");
-            string input = Console.ReadLine();
+            string appendText = input;
+            try
+            {
+                File.AppendAllText(path, appendText + Environment.NewLine);
+                GuessingGameMenu();
+            }
 
-            string appendText = input + Environment.NewLine;
-            File.AppendAllText(path, appendText);
-            GuessingGameMenu();
-
-            return appendText;
+            catch (Exception)
+            {
+                throw;
+            }
+            return File.Exists(path);
         }
+       
+
         /// <summary>
         /// Deletes a word from the game file. 
         /// </summary>
@@ -183,28 +209,37 @@ namespace WordGuessGame
         {
             string path = "../../../allWords.txt";
             Console.WriteLine("Here is a list of the current words: ");
-            string[] words = File.ReadAllLines(path);
-
-
-            foreach (string word in words)
+            try
             {
-                Console.WriteLine(word);
+                string[] words = File.ReadAllLines(path);
+
+                foreach (string word in words)
+                {
+                    Console.WriteLine(word);
+                }
+
+                Console.WriteLine("Which word would you like to delete?");
+                Console.Write("> ");
+                string input = Console.ReadLine().ToLower();
+
+                var newFile = words.Where(word => !word.Contains(input));
+                File.WriteAllLines(path, newFile);
+                Console.WriteLine("You have successfully deleted: " + input + "\n");
+                Console.WriteLine("Words left: ");
+                foreach (string word in newFile)
+                {
+                    Console.WriteLine(word);
+                }
+                return string.Join(", ", newFile);
             }
-
-            Console.WriteLine("Which word would you like to delete?");
-            Console.Write("> ");
-            string input = Console.ReadLine().ToLower();
-
-            var newFile = words.Where(word => !word.Contains(input));
-            File.WriteAllLines(path, newFile);
-            Console.WriteLine("You have successfully deleted: " + input + "\n");
-            Console.WriteLine("Words left: ");
-            foreach (string word in newFile)
+            catch (Exception)
             {
-                Console.WriteLine(word);
+                throw;
             }
-            return string.Join(", ", newFile);
+            
         }
+        
+        
         /// <summary>
         /// Allows us to view all the words in the game. 
         /// </summary>
@@ -213,15 +248,25 @@ namespace WordGuessGame
         {
             string path = "../../../allWords.txt";
             Console.WriteLine("Here is a list of the current words: ");
-            string[] words = File.ReadAllLines(path);
 
-            foreach (string word in words)
+            try
             {
-                Console.WriteLine(word);
-            }
+                string[] words = File.ReadAllLines(path);
 
-            return string.Join(", ", words);
+                foreach (string word in words)
+                {
+                    Console.WriteLine(word);
+                }
+
+                return string.Join(", ", words);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
+        
+        
         /// <summary>
         /// Returns a random word from the file. 
         /// </summary>
@@ -239,6 +284,8 @@ namespace WordGuessGame
 
             return randomWord;
         }
+        
+        
         /// <summary>
         /// Will show the amount of underscores in random word that's selected. 
         /// </summary>
@@ -255,6 +302,8 @@ namespace WordGuessGame
             }
             return stringToCharWord;
         }
+        
+        
         /// <summary>
         /// This method handles the logic of comparing if the userInput is equal to the one of the letters in the selected word index.
         /// </summary>
@@ -284,7 +333,13 @@ namespace WordGuessGame
                 }
                 else
                 {
-                    Console.WriteLine("Not the right guess, please try again");
+
+                    characterGuessed.Add(userInput);
+                    Console.WriteLine("These are your previous guesses: ");
+                    foreach (char letter in characterGuessed)
+                    {
+                        Console.WriteLine(letter);
+                    }
                 }
                 return underscoredWord;
             }
@@ -295,11 +350,10 @@ namespace WordGuessGame
                 Console.ReadLine();
                 throw;
             }
-            finally
-            {
-                
-            }
+           
         }
+        
+        
         /// <summary>
         /// This is the method to see whether or not a guess is in a word. 
         /// </summary>
@@ -317,6 +371,8 @@ namespace WordGuessGame
             }
             return false;
         }
+        
+        
         /// <summary>
         /// This sees if a word still contains underscores
         /// </summary>
