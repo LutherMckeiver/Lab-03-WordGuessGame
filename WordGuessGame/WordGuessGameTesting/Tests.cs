@@ -12,35 +12,28 @@ namespace WordGuessGameTesting
         {
             Assert.Equal(expectation, Program.CreateNewFile());
         }
-
         [Theory]
-        [InlineData("hello", true)]
-        public void AddNewWords(string word, bool expectation)
-        {
-            Assert.Equal(expectation, Program.AddNewWord(word));
-        }
-
-        [Theory]
-        [InlineData("tiger, cat, frog, cow, sheep, lion, dragon, fish, shark, hello, hello, hello, hello", true)]
-        public void ViewAllWords(string expectation, bool actual)
+        [InlineData(true)]
+        public void ViewAllWords(bool expectation)
         {
             Assert.Equal(expectation, Program.ViewAllWords());
         }
 
-        //[Fact]
-        //public void CheckIfLetterExistsInWord() // come back to testing..
-        //{
-        //    char[] word = { 'h', 'e', 'l', 'l', 'o' };
-        //    string guess = "h";
-        //    bool expected = true;
+      //  [Theory]
+       // [InlineData(true)]
+       // public void AddANewWord(bool expectation)
+       // {
+        //    Assert.Equal(expectation, Program.AddNewWord("hello"));
+       // }
 
-        //    for(int i = 0; i < word.Length; i++)
-        //    {
+        [Theory]
+        [InlineData("cow", true)]
+        public void CanDeleteDisWord(string input, bool expectation)
+        {
+            string DeleteDatWord = input;
+        }
+    
+ 
 
-        //    }
-
-
-        //    Assert.Equal(guess, Program.ContainsLetter(guess, word));
-        //}
     }
 }

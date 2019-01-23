@@ -4,6 +4,4 @@ frog
 cow
 sheep
 lion
-dragon
-fish
-shark
+dog

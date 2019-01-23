@@ -72,7 +72,7 @@ namespace WordGuessGame
             char[] showUnderscore = ShowUnderscoresForSelectedRandomWord(word);
             Console.WriteLine(String.Join(" ", showUnderscore));
 
-            HashSet<char> charactersGuessed = new HashSet<char>();
+            
 
 
 
@@ -83,9 +83,20 @@ namespace WordGuessGame
                 Console.WriteLine(String.Join(" ", showUnderscore));
             }
             Console.WriteLine("Good game, thanks for playing. Want to play another game?");
+            Console.WriteLine("Type y to continue, any other key to exit.");
             Console.Write("> ");
             string answer = Console.ReadLine();
-            Options(answer);
+
+            if (answer  == "y" || answer == "yes" )
+            {
+                characterGuessed.Clear();
+                Options(answer);
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
+            
         }
 
        
@@ -102,14 +113,20 @@ namespace WordGuessGame
                     break;
                 case "2":
                     ViewAllWords();
+                    Console.WriteLine();
+                    GuessingGameMenu();
                     break;
                 case "3":
                     Console.Write("Add your word here: ");
                     string input = Console.ReadLine();
                     AddNewWord(input);
+                    Console.WriteLine();
+                    GuessingGameMenu();
                     break;
                 case "4":
                     DeleteAWord();
+                    Console.WriteLine();
+                    GuessingGameMenu();
                     break;
                 case "5":
                     Console.WriteLine("See you later");
